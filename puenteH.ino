@@ -4,9 +4,6 @@ const int controlPin4 = 4;
 const int controlPin5 = 5;
 const int enablePin = 9;
 const int enablePin2 = 10;
-const int directionSwitchPin = 4;
-const int onOffSwitchStateSwitchPin = 5;
-const int potPin = A0;
 
 int onOffSwitchState = 1;
 int previousOnOffSwitchState = 0;
@@ -18,22 +15,36 @@ int motorSpeed = 0;
 int motorDirection = 0;
 
 
+const int Trigger = 13;   //Pin digital 2 para el Trigger del sensor
+const int Echo = 12;   //Pin digital 3 para el Echo del sensor
+
+
 void setup() {
-  //pinMode(directionSwitchPin, INPUT);
-  //pinMode(onOffSwitchStateSwitchPin,INPUT);
+  Serial.begin(9600); 
   pinMode(controlPin1, OUTPUT);
   pinMode(controlPin2, OUTPUT);
-  pinMode(enablePin, OUTPUT);
   pinMode(controlPin4, OUTPUT);
   pinMode(controlPin5, OUTPUT);
   pinMode(enablePin, OUTPUT);
   digitalWrite(enablePin, HIGH);
   digitalWrite(enablePin2, HIGH);
+
+
+  pinMode(Trigger, OUTPUT); //pin como salida
+  pinMode(Echo, INPUT);  //pin como entrada
+  digitalWrite(Trigger, LOW);//Inicializamos el pin con 0
+
+
 }
 
 void loop() {
+
+  long d; //distancia en centimetros 
+  d = dcal();
+  Serial.print(d);  
+  Serial.print("\t");    
   //onOffSwitchState = digitalRead(onOffSwitchStateSwitchPin);
-  delay(1);
+//  delay(1);
   //directionSwitchState = digitalRead(directionSwitchPin);
   directionSwitchState = 1;
   //motorSpeed = analogRead(potPin)/4;
@@ -51,24 +62,47 @@ void loop() {
   }
 
   if (motorDirection == 1){
-    digitalWrite(controlPin1,HIGH);
-    digitalWrite(controlPin2,LOW);
-    digitalWrite(controlPin4,HIGH);
-    digitalWrite(controlPin5,LOW);
+    MotorSpeedOn();
   }
   else{
-    digitalWrite(controlPin1, LOW);
+    MotorSpeedOff();
+  }
+  if(d <= 120){
+    //MotorSpeedOff();
+    digitalWrite(controlPin1, HIGH);
     digitalWrite(controlPin2, HIGH);
-    digitalWrite(controlPin4,LOW);
+    //delay(10000);
+    digitalWrite(controlPin4,HIGH);
     digitalWrite(controlPin5,HIGH);
+    digitalWrite(controlPin1, HIGH);
+    digitalWrite(controlPin2, LOW);
+    delay(3000);
+    
   }
-
-  /*if (motorEnabled ==1){
-      analogWrite(enablePin, motorSpeed);
-  }
-  else{
-    analogWrite(enablePin, 0);
-  }*/
+  //delay(3000);
   previousDirectionSwitchState = directionSwitchState;
   previousOnOffSwitchState = onOffSwitchState;
+}
+
+void MotorSpeedOn(){
+  digitalWrite(controlPin1,HIGH);
+  digitalWrite(controlPin2,LOW);
+  digitalWrite(controlPin4,HIGH);
+  digitalWrite(controlPin5,LOW);
+}
+void MotorSpeedOff(){
+  digitalWrite(controlPin1, LOW);
+  digitalWrite(controlPin2, HIGH);
+  digitalWrite(controlPin4,LOW);
+  digitalWrite(controlPin5,HIGH);
+}
+int dcal(){
+  long t; //timepo que demora en llegar el eco
+
+  digitalWrite(Trigger, HIGH);
+  delayMicroseconds(10);          //Enviamos un pulso de 10us
+  digitalWrite(Trigger, LOW);
+  
+  t = pulseIn(Echo, HIGH); //obtenemos el ancho del pulso
+  return t/59; 
 }

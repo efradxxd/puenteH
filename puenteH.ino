@@ -12,7 +12,7 @@ int previousDirectionSwitchState = 0;
 
 int motorEnabled = 0;
 int motorSpeed = 0;
-int motorDirection = 0;
+int motorDirection = 1;
 
 
 const int Trigger = 13;   //Pin digital 2 para el Trigger del sensor
@@ -67,16 +67,28 @@ void loop() {
   else{
     MotorSpeedOff();
   }
-  if(d <= 120){
+  if(d <= 20){
     //MotorSpeedOff();
     digitalWrite(controlPin1, HIGH);
     digitalWrite(controlPin2, HIGH);
     //delay(10000);
     digitalWrite(controlPin4,HIGH);
     digitalWrite(controlPin5,HIGH);
+//    digitalWrite(controlPin1, HIGH);
+//    digitalWrite(controlPin2, LOW);
+//    delay(3000);
+    
+  }
+  if(d <= 100){
+    //MotorSpeedOff();
     digitalWrite(controlPin1, HIGH);
-    digitalWrite(controlPin2, LOW);
-    delay(3000);
+    digitalWrite(controlPin2, HIGH);
+    //delay(10000);
+    digitalWrite(controlPin4,HIGH);
+    digitalWrite(controlPin5,HIGH);
+//    digitalWrite(controlPin1, HIGH);
+//    digitalWrite(controlPin2, LOW);
+//    delay(3000);
     
   }
   //delay(3000);
